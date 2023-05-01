@@ -18,6 +18,7 @@
             <artifactId>lucene-queryparser</artifactId>
             <version>7.7.1</version>
         </dependency>
+
     </dependencies>
 
     <properties>
