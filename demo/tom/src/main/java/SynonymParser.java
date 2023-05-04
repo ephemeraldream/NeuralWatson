@@ -19,7 +19,7 @@ public class SynonymParser {
             String toParse = scanner.nextLine();
             List<String> splitted = new LinkedList<String>(List.of(toParse.split(",")));
             splitted.remove(1);
-            synonyms.put(splitted.get(0), splitted.get(1).split(";"));
+            synonyms.put(splitted.get(0), splitted.get(1).split(";|\\|"));
 
             int iasdf = 32;
 
@@ -29,7 +29,7 @@ public class SynonymParser {
                 try {
             FileOutputStream myFileOutStream
                 = new FileOutputStream(
-                    "another_data/parsedSynonyms");
+                    "another_data/parsedSynonyms.txt");
 
             ObjectOutputStream myObjectOutStream
                 = new ObjectOutputStream(myFileOutStream);

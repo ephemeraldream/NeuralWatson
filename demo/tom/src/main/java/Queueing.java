@@ -11,6 +11,7 @@ import org.apache.lucene.search.TopDocs;
 import opennlp.tools.tokenize.SimpleTokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.*;
@@ -36,6 +37,7 @@ public class Queueing {
             Query totalQuery = new QueryParser("info", analyzer).parse(tokenizedQuery);
             IndexReader indexReader = DirectoryReader.open(this.index);
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+            indexSearcher.setSimilarity(new LMDirichletSimilarity());
             TopDocs documents = indexSearcher.search(totalQuery, 9);
             ScoreDoc[] matches =  documents.scoreDocs;
             if (matches.length == 0){
@@ -65,12 +67,17 @@ public class Queueing {
             FileInputStream file = new FileInputStream("serealizedQA.txt");
             ObjectInputStream in = new ObjectInputStream(file);
             map = (HashMap<String, String>) in.readObject();
-            map.remove("");
+            int count = 0;
             for (String Q: map.keySet()){
                 String A = map.get(Q);
-                total += meta.QueueByOne(Q,A);
+                if (meta.QueueByOne(Q,A) != 0) {
+                    total += meta.QueueByOne(Q, A);
+                    count++;
+                }
             }
             System.out.println(total/100);
+            System.out.println(count);
+
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

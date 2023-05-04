@@ -1,58 +1,49 @@
-import opennlp.tools.lemmatizer.SimpleLemmatizer;
-import opennlp.tools.tokenize.SimpleTokenizer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
+import opennlp.tools.tokenize.SimpleTokenizer;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-
 import static java.lang.System.exit;
 
-public class IndexGenerator {
-    StandardAnalyzer analyzer = new StandardAnalyzer();
-    IndexWriterConfig config = new IndexWriterConfig(analyzer);
-    SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
 
 
+public class CreatingDataset {
+        SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
 
-    public void totalIndexation() throws IOException {
-        IndexWriter w = null;
+        FileWriter myWriter = new FileWriter("dataset.txt");
+
+    public CreatingDataset() throws IOException {
+    }
+
+    public void totalDataset() throws IOException {
         String file = "Indexation";
-        Directory index = FSDirectory.open(Paths.get(file));
-        try {
-            w = new IndexWriter(index, config);
-        } catch (IOException e) {
-            e.printStackTrace();
-            exit(1);
-        }
         File dir = new File("data");
         File[] files = dir.listFiles();
         if (files != null) {
             int numDocument = 0;
             for (File f : files) {
-                buildIndex(f, index, w);
+                datasetCreation(f);
                 numDocument++;
                 System.out.println("Finished File: " + numDocument);
             }
-            w.close();
         }
     }
-    public Directory buildIndex(File file, Directory index, IndexWriter w) throws FileNotFoundException {
+    public void datasetCreation(File file) throws IOException {
         FileReader source = new FileReader(file);
         BufferedReader reader = new BufferedReader(source);
         String str;
         String title = "";
         StringBuilder info = new StringBuilder();
         boolean start = true;
+
+
         try {
             while ((str = reader.readLine()) != null) {
                 if (str.equals("")) {
@@ -63,10 +54,8 @@ public class IndexGenerator {
                         continue;
                     }
                     if(!start){
-                        Document doc = new Document();
-                        doc.add(new TextField("info", info.toString(), Field.Store.YES));
-                        doc.add(new StringField("docid", title, Field.Store.YES));
-                        w.addDocument(doc);
+                        myWriter.write(info.toString());
+
                         title = "";
                         info.setLength(0);
                     }
@@ -95,10 +84,10 @@ public class IndexGenerator {
                         continue;
                     }
                     str = str.toLowerCase();
-                    String procedure = Arrays.toString(tokenizer.tokenize(str));
-                    procedure = procedure.substring(1, procedure.length()-1);
+                    String procInfo = Arrays.toString(tokenizer.tokenize(str));
+                    procInfo = procInfo.substring(1, procInfo.length()-1);
                     info.append(" ");
-                    info.append(procedure);
+                    info.append(procInfo);
                 }
             }
         } catch (IOException e) {
@@ -106,15 +95,12 @@ public class IndexGenerator {
             exit(1);
         }
 
-        return index;
 
     }
 
-
-
-
-
-
+    public static void main(String[] args) throws IOException {
+        CreatingDataset d = new CreatingDataset();
+        d.totalDataset();
+    }
 
 }
-
