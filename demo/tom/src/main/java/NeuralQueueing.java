@@ -11,24 +11,22 @@ import org.apache.lucene.search.TopDocs;
 import opennlp.tools.tokenize.SimpleTokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.FSDirectory;
-import org.hyperic.sigar.win32.test.TestPdh;
 
 import java.io.*;
 import java.util.*;
 
 import java.io.IOException;
 
-public class SynonymQueueing {
+public class NeuralQueueing {
     Tokenizer tokenizer = SimpleTokenizer.INSTANCE;
     Analyzer analyzer = new StandardAnalyzer();
     FSDirectory index = FSDirectory.open(new File("Indexation").toPath());
 
-    public SynonymQueueing() throws IOException {
+    public NeuralQueueing() throws IOException {
     }
 
 
@@ -92,7 +90,9 @@ public class SynonymQueueing {
                         i++;
                     }
                     allCounts.add(count);
-                    trigger++;
+                    if (qs != -1){
+                        trigger++;
+                    }
                     if (qs == 0 || qs == trigger) {
                         break;
                     }
@@ -138,73 +138,76 @@ public class SynonymQueueing {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Hello! I'm QA Watson System!");
-        System.out.println("Firstly, please, choose the similarity function to work with!");
-        System.out.println("Press 1 to stay on default one.");
-        System.out.println("Press 2 to choose Boolean.");
-        System.out.println("Press 3 to choose Jelinek Mercer Model");
-        Scanner s = new Scanner(System.in);
-        Similarity scoreFunction = null;
-        int sw = s.nextInt();
-        if (sw == 1){
-            scoreFunction = null;
-        }
-        if (sw == 2){
-            scoreFunction = new BooleanSimilarity();
-        }
-        if (sw == 3){
-            scoreFunction = new LMDirichletSimilarity();
-        }
-        System.out.println("Choose, please, how many synonym Queries you want me to work on? Press 0 if all of them.");
-        System.out.println("You can choose from 1 to 100.");
-        int syns = s.nextInt();
-        System.out.println("Do you want to use Word2Vec synonym queues? Press 1 to include.");
-        int one  = s.nextInt();
-        File fileSynonyms = new File("W2VGeneratedSynonyms.txt");
-        Scanner reader = new Scanner(fileSynonyms);
-        ArrayList<String> synonymQs = new ArrayList<>();
-        while (reader.hasNext()){
-            String data = reader.nextLine();
-            synonymQs.add(data);
-        }
+//        System.out.println("Hello! I'm QA Watson System!");
+//        System.out.println("Firstly, please, choose the similarity function to work with!");
+//        System.out.println("Press 1 to stay on default one.");
+//        System.out.println("Press 2 to choose Boolean.");
+//        System.out.println("Press 3 to choose Jelinek Mercer Model");
+//        Scanner s = new Scanner(System.in);
+//        Similarity scoreFunction = null;
+//        int sw = s.nextInt();
+//        if (sw == 1) {
+//            scoreFunction = null;
+//        }
+//        if (sw == 2) {
+//            scoreFunction = new BooleanSimilarity();
+//        }
+//        if (sw == 3) {
+//            scoreFunction = new LMDirichletSimilarity();
+
+        for (int i = 0; i < 100; i++) {
 
 
-
-        SynonymQueueing meta = new SynonymQueueing();
-        ArrayList<String> Qs;
-        ArrayList<String> As;
-        HashMap<String, String[]> symMap;
-        float total = 0;
-        ArrayList<Float> MRR = new ArrayList<>();
-        try{
-            FileInputStream fileQ = new FileInputStream("serealizedQ.txt");
-            ObjectInputStream inQ = new ObjectInputStream(fileQ);
-
-            FileInputStream fileA = new FileInputStream("serealizedA.txt");
-            ObjectInputStream inA = new ObjectInputStream(fileA);
-            FileInputStream symFile = new FileInputStream("parsedSynonyms.txt");
-            ObjectInputStream symIn = new ObjectInputStream(symFile);
-            symMap = (HashMap<String, String[]>) symIn.readObject();
-            Qs = (ArrayList<String>) inQ.readObject();
-            As = (ArrayList<String>) inA.readObject();
-            int count = 0;
-            int loopCount =0;
-            for (String Q: Qs){
-                String A = As.get(loopCount);
-                float mrr = meta.QueueWithIn(Q,A,symMap,scoreFunction, syns, one, synonymQs.get(loopCount));
-                if (mrr != 0) {
-                    total += mrr;
-                    count++;
-                }
-                loopCount++;
+            System.out.println("Choose, please, how many synonym Queries you want me to work on? Press -1 if all of them.");
+            System.out.println("You can choose from 1 to 100.");
+            //int syns = s.nextInt();
+            System.out.println("Do you want to use Word2Vec synonym queues? Press 1 to include.");
+            //int one = s.nextInt();
+            File fileSynonyms = new File("W2VGeneratedSynonyms.txt");
+            Scanner reader = new Scanner(fileSynonyms);
+            ArrayList<String> synonymQs = new ArrayList<>();
+            while (reader.hasNext()) {
+                String data = reader.nextLine();
+                synonymQs.add(data);
             }
-            System.out.println("Your MRR is: " + total/100);
-            System.out.println("Caught documents: " + count + "/100");
 
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+
+            NeuralQueueing meta = new NeuralQueueing();
+            ArrayList<String> Qs;
+            ArrayList<String> As;
+            HashMap<String, String[]> symMap;
+            float total = 0;
+            ArrayList<Float> MRR = new ArrayList<>();
+            try {
+                FileInputStream fileQ = new FileInputStream("serealizedQ.txt");
+                ObjectInputStream inQ = new ObjectInputStream(fileQ);
+
+                FileInputStream fileA = new FileInputStream("serealizedA.txt");
+                ObjectInputStream inA = new ObjectInputStream(fileA);
+                FileInputStream symFile = new FileInputStream("parsedSynonyms.txt");
+                ObjectInputStream symIn = new ObjectInputStream(symFile);
+                symMap = (HashMap<String, String[]>) symIn.readObject();
+                Qs = (ArrayList<String>) inQ.readObject();
+                As = (ArrayList<String>) inA.readObject();
+                int count = 0;
+                int loopCount = 0;
+                for (String Q : Qs) {
+                    String A = As.get(loopCount);
+                    float mrr = meta.QueueWithIn(Q, A, symMap, new LMDirichletSimilarity(), i, 2, synonymQs.get(loopCount));
+                    if (mrr != 0) {
+                        total += mrr;
+                        count++;
+                    }
+                    loopCount++;
+                }
+                System.out.println("Your MRR is: " + total / 100);
+                System.out.println("Caught documents: " + count + "/100");
+
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
