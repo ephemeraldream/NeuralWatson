@@ -2,7 +2,7 @@
 Implementation of IBM Watson QA System using Lucene combined with Neural Approach
 
 
-![alt text](http://url/to/img.png)
+![](https://github.com/ephemeraldream/NeuralWatson/blob/main/demo/tom/MRR.png)
 
 
 to compile 
