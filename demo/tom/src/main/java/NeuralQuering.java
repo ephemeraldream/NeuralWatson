@@ -159,7 +159,7 @@ public class NeuralQuering {
         System.out.println("Choose, please, how many synonym Queries you want me to work on? Press -1 if all of them.");
         System.out.println("You can choose from 1 to 100.");
         int syns = s.nextInt();
-        System.out.println("Do you want to use Word2Vec synonym queues? Press 1 to include.");
+        System.out.println("Do you want to use Word2Vec? Press 1 to include.");
         int one  = s.nextInt();
         File fileSynonyms = new File("W2VGeneratedSynonyms.txt");
         Scanner reader = new Scanner(fileSynonyms);
