@@ -1,9 +1,23 @@
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        IndexGenerator gen = new IndexGenerator();
-        gen.totalIndexation();
+
+}
+
+
+
+
+abstract class Approver {
+    String name;
+    Approver successor;
+
+    Approver(String name){
+        this.name = name;
 
     }
+    void setSuccessor(Approver successor){
+        this.successor = successor;
+    }
+    abstract void processRequest(PurchaseRequest request);
 }
+

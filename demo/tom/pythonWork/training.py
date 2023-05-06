@@ -1,9 +1,4 @@
-import numpy as np
-import tensorflow as tf
-import keras
-from keras.integration_test.models.text_classification import custom_standardization
-from keras.layers import TextVectorization
-import collections
+
 import word2vec
 
 def main():

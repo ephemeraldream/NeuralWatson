@@ -1,8 +1,6 @@
 import word2vec
 
-from keras.integration_test.models.text_classification import custom_standardization
-from keras.layers import TextVectorization
-from gensim.models import word2vec
+
 from gensim.models import Word2Vec
 
 

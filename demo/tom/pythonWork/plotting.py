@@ -1,10 +1,7 @@
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-import word2vec
 import numpy as np
-from keras.integration_test.models.text_classification import custom_standardization
-from keras.layers import TextVectorization
-from gensim.models import word2vec
+
 from gensim.models import Word2Vec
 
 
